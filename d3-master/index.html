@@ -1,0 +1,33 @@
+<!-- index.html-->
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>test</title>
+	<script type="text/javascript" src="d3.js"></script>
+</head>
+<body>
+	<script>
+		var width = 400;
+		var height = 400;
+		var svg = d3.select("body")
+						.append("svg")
+						.attr("width",width)
+						.attr("height",height);
+		svg.append("circle")
+				.attr("cx","50px")
+				.attr("cy","50px")
+				.attr("r","50px")
+				.attr("fill","red");
+
+		d3.text("1.txt",function(error,txtdata){
+			if(error){
+		//		return console.error(error);
+			}
+
+			d3.select("body")
+				.append("p").text(txtdata);
+			});
+	</script>
+</body>
+</html>
