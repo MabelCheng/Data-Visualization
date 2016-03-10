@@ -17,6 +17,7 @@ public:
 	vector<vector<string>> get_snode(){ return snode; }
 	double get_weight(){ return weight; }
 	void clear(){ fnode.clear(); snode.clear(); weight = 0.0; }
+
 private:
 	vector<vector<string>> fnode;
 	vector<vector<string>> snode;
@@ -31,6 +32,41 @@ double distance_temp;
 double ratio_result = 1;
 vector<double> weight_compress;
 
+//show
+void show(vector<Cnode> vc){
+	ofstream ofile;
+	ofile.open("d:\\4.json");
+
+	for (size_t i = 0; i < vc.size(); i++)
+	{
+		vector<vector<string>> fn;
+		vector<vector<string>> sn;
+		double w;
+		fn = vc[i].get_fnode();
+		sn = vc[i].get_snode();
+		w = vc[i].get_weight();
+		ofile << "first : ";
+		for (size_t j = 0; j < fn.size(); j++)
+		{
+			for (size_t m = 0; m < fn[j].size(); m++)
+			{
+				ofile << fn[j][m] << " ";
+			}
+		}
+		ofile << "second: ";
+		for (size_t j = 0; j < sn.size(); j++)
+		{
+			for (size_t m = 0; m < sn[j].size(); m++)
+			{
+				ofile << sn[j][m] << " ";
+			}
+		}
+		ofile << " weight : " << w;
+		ofile << "\n";
+	}
+	ofile.close();
+
+}
 //to add last part to temp vector<Cnode>
 vector<Cnode> add_(vector<Cnode> vc, vector<Cnode> vc1)
 {
@@ -137,7 +173,7 @@ void main(){
 	double ratio;
 	cout << "please enter the ratio tou want to measure:";
 	cin >> ratio;
-	string filename("d://1.txt");
+	string filename("d://3.txt");
 	ifstream fin(filename.c_str());
 
 	if (!fin)
@@ -343,7 +379,10 @@ void main(){
 			}						
 		}
 		ratio_result = get_ratio(vcnode_result, oldsize);
-		cout << ratio_result;
+		cout << ratio_result << "\n";
 		cout << distance_result;
 		}
+		
+
+		show(vcnode_result);
 }
