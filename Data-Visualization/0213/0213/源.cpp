@@ -173,7 +173,7 @@ void main(){
 	double ratio;
 	cout << "please enter the ratio tou want to measure:";
 	cin >> ratio;
-	string filename("d://3.txt");
+	string filename("d://1.txt");
 	ifstream fin(filename.c_str());
 
 	if (!fin)
@@ -379,6 +379,7 @@ void main(){
 			}						
 		}
 		ratio_result = get_ratio(vcnode_result, oldsize);
+		show(vcnode_result);
 		cout << ratio_result << "\n";
 		cout << distance_result;
 		}
