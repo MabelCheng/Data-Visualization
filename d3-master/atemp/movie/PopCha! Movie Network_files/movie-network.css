@@ -1,0 +1,135 @@
+body {
+	background-color: rgb(246, 246, 246);
+}
+a {
+	color: blue; text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+a:visited {
+	color: blue;
+}
+div#sidepanel {
+	top: 0px; right: 0px; position: absolute; pointer-events: none;
+}
+div#title {
+	border-width: 0px; margin: 4px 2px 6px 0px; padding: 0px; text-align: right; color: rgb(93, 29, 77); line-height: 18px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 18px; font-weight: bold; pointer-events: none;
+}
+div#title img {
+	border-width: 0px; margin: 0px;
+}
+img#helpIcon {
+	top: 100px; right: 6px; position: absolute; cursor: help; pointer-events: all;
+}
+div.panel_off {
+	visibility: hidden; pointer-events: none;
+}
+div.panel_on {
+	visibility: visible; pointer-events: all;
+}
+div#help {
+	margin: 6px; padding: 4px; border-radius: 10px; border: 1px solid rgb(152, 153, 112); transition:visibility 1.2s; border-image: none; width: 420px; right: 0px; font-family: Georgia, Times New Roman, Times, serif; font-size: 11pt; position: absolute; z-index: 1001; box-shadow: 4px 4px 10px rgba(0,0,0,0.4); background-color: rgb(222, 223, 163); -moz-transition: visibility 1.2s; -o-transition: visibility 1.2s; -webkit-transition: visibility 1.2s; -webkit-border-radius: 10px; -moz-border-radius: 10px; -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4); -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+}
+div#help ul {
+	margin: 0.5em 0em; padding-left: 1.5em;
+}
+div#help li {
+	margin: 0em; padding: 0px;
+}
+div#faq {
+	background: rgb(229, 228, 214); padding: 4px; border-radius: 8px; border: 1px solid rgb(170, 170, 170); border-image: none; left: 6px; top: 6px; width: 860px; height: 600px; font-size: 11pt; position: absolute; z-index: 1002; -ms-overflow-y: auto; box-shadow: 4px 4px 10px rgba(0,0,0,0.4); -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4); -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+}
+div#faq dt {
+	color: rgb(93, 29, 77); font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 13pt; font-weight: bold; margin-top: 0.4em;
+}
+div#faq dd {
+	padding-left: 0px; font-family: Georgia, Times New Roman, Times, serif; margin-left: 0.7em;
+}
+div#close_faq {
+	padding: 0px; margin-top: 0px; margin-left: 820px; position: fixed;
+}
+div#nocontent {
+	background: rgb(195, 176, 145); padding: 12px; border-radius: 8px; border: 2px solid rgb(170, 0, 0); border-image: none; left: 200px; top: 200px; width: 600px; height: 200px; text-align: center; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 20px; visibility: hidden; position: absolute; pointer-events: none;
+}
+div#nocontent h1 {
+	margin: 1em; color: red; font-size: 24px; font-weight: bold;
+}
+div#movieInfo {
+	background: rgb(229, 228, 214); padding: 4px; border-radius: 8px; border: 1px solid rgb(170, 170, 170); border-image: none; width: 300px; text-align: right; right: 4px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; position: relative; z-index: 1000; cursor: text;
+}
+div#movieInfo div#cover {
+	height: 300px; text-align: left;
+}
+div#movieInfo div.t {
+	font-size: 14px; font-weight: bold;
+}
+div#movieInfo img.cover {
+	right: 3px; margin-bottom: 6px; position: absolute;
+}
+div#movieInfo img.action {
+	position: absolute; cursor: pointer;
+}
+div#movieInfo div.f {
+	margin-top: 3px; margin-bottom: 3px; border-top-color: rgb(142, 89, 129); border-top-width: 1px; border-top-style: dotted;
+}
+div#movieInfo span.d {
+	font-weight: bold;
+}
+div#movieInfo span.c {
+	font-style: italic;
+}
+div#movieInfo span.l {
+	color: rgb(36, 85, 62); font-size: 11px; font-variant: small-caps;
+}
+div#movieNetwork svg {
+	cursor: move; background-color: white;
+}
+line.link {
+	stroke: #b2d9d8;
+}
+circle {
+	cursor: crosshair; fill: #ebc763;
+}
+circle.level1 {
+	stroke: #f00;
+}
+circle.level2 {
+	fill-opacity: 0.8; stroke: #777; stroke-opacity: 0.8;
+}
+circle.level3 {
+	fill-opacity: 0.5; stroke-opacity: 0.5;
+}
+circle.sibling {
+	fill: #455ee8;
+}
+circle.main {
+	fill: #732a9a; fill-opacity: 1;
+}
+g.gLabel {
+	font: 10px/normal sans-serif; visibility: hidden; font-size-adjust: none; font-stretch: normal;
+}
+g.on {
+	visibility: visible;
+}
+g.zoomed {
+	border: currentColor; border-image: none; text-align: center; color: rgb(0, 0, 0); font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: normal; z-index: 0;
+}
+text {
+	font: 10px/normal sans-serif; font-size-adjust: none; font-stretch: normal; stroke-opacity: 1;
+}
+text.nlabel {
+	
+}
+text.nshadow {
+	stroke: #fff; stroke-width: 3px;
+}
+text.main {
+	font: bold 12px/normal sans-serif; font-size-adjust: none; font-stretch: normal;
+}
+.nlabel_on {
+	font-size: 12px; font-weight: bold; visibility: visible; opacity: 1; fill: #101000; stroke: #ffffff;
+}
+.tooltip {
+	background: rgba(222, 223, 163, 0.8); font: 15px/normal Helvetica Neue; padding: 8px; border-radius: 8px; border: 1px solid rgb(170, 170, 170); border-image: none; width: 200px; height: 50px; text-align: center; position: absolute; z-index: 1000; font-size-adjust: none; font-stretch: normal; pointer-events: none;
+}

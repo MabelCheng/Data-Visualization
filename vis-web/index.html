@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>visofdata</title>
+	<link rel="stylrsheet" type="text/css" href="vis.css"/>
+</head>
+
+<body>
+<script src="d3.js" charset="utf-8"></script>
+	<script type="text/javascript">
+		var node=[{name:"AllelicVariant_MIM:600053.0009 AllelicVariant_MIM:600053.0002"},
+    {name:"Phenotype_MIM:216900"},
+    {name:"Gene_EntrezGene:1261"},
+    {name:"Protein_UniProt:P97627 Protein_UniProt:Q9QX26"},
+    {name:"MolecularFunction_GO:GO:0005223"},
+    {name:"Gene_EntrezGene:85257"},
+    {name:"Protein_STRING:ENSRNOP00000023728 "},
+    {name:"Protein_UniProt:Q6ZNA7 Protein_UniProt:Q4VAP7"},
+    {name:"Protein_UniProt:Q16281"},
+    {name:"Article_PubMed:16319819 Article_PubMed:20079539"},
+    {name:"Gene_EntrezGene:54714"},
+    {name:"Protein_UniProt:Q9ER32 Protein_UniProt:Q9QWN7"},
+    {name:"AllelicVariant_MIM:600053.0010 AllelicVariant_MIM:600053.0006"},
+    {name:"AllelicVariant_MIM:605080.0001"},
+    {name:"Article_PubMed:17018579"},
+    {name:"CellularComponent_GO:GO:0001750"},
+    {name:"Gene_EntrezGene:30952"},
+    {name:"Article_PubMed:10888875"},
+    {name:"Gene_EntrezGene:36806"},
+    {name:"Protein_UniProt:Q24278"},
+    {name:"Protein_UniProt:Q9ER33"},
+    {name:"Gene_EntrezGene:12790"},
+    {name:"MolecularFunction_GO:GO:0005221"},
+    {name:"Protein_UniProt:Q13956"},
+    {name:"Article_PubMed:15134637r"},
+    {name:"Article_PubMed:14757870"},
+    {name:"Protein_UniProt:Q9NQW8"},
+    {name:"Gene_EntrezGene:37479"},
+    {name:"Gene_EntrezGene:172723"},
+    {name:"Phenotype_MIM:262300"},
+    {name:"Article_PubMed:17265047"},
+    {name:"Protein_UniProt:P19087"},
+    {name:"MolecularFunction_GO:GO:0030553"},
+    {name:"Article_PubMed:19592100"},
+    {name:"Protein_UniProt:P51160"},
+    {name:"ConservedSite_InterPro:IPR018488"},
+    {name:"Protein_UniProt:Q9JJZ9"},
+    {name:"Protein_UniProt:Q9JJZ8"},
+    {name:"Gene_EntrezGene:500418"},
+    {name:"BiologicalProcess_GO:GO:0007601"},
+    {name:" Article_PubMed:15712225"},
+    {name:"Protein_UniProt:Q8IV77"},
+    {name:"Protein_UniProt:Q8CFV6"}];
+
+var edge=[{source: 0 ,target: 1  ,value: 0.568577},
+{source: 0 ,target: 2  ,value: 0.9},
+{source: 3 ,target: 4  ,value: 0.472142},
+{source: 3 ,target: 5  ,value: 0.766206},
+{source: 3 ,target: 6  ,value: 0.917639},
+{source: 7 ,target: 8  ,value: 0.917639},
+{source: 7 ,target: 2  ,value: 0.9},
+{source: 9 ,target: 10  ,value: 0.504538},
+{source: 9 ,target: 2  ,value: 0.504538},
+{source: 11 ,target: 4  ,value: 0.472142},
+{source: 11 ,target: 5  ,value: 0.766206},
+{source: 12 ,target: 1  ,value: 0.568577},
+{source: 12 ,target: 2  ,value: 0.9},
+{source: 10 ,target: 13  ,value: 0.9},
+{source: 4 ,target: 10  ,value: 0.762071},
+{source: 14 ,target: 10  ,value: 0.504538},
+{source: 15 ,target: 16  ,value: 0.470571},
+{source: 17 ,target: 10  ,value: 0.504538},
+{source: 18 ,target: 19  ,value: 0.9},
+{source: 4 ,target: 20  ,value: 0.472142},
+{source: 2 ,target: 10  ,value: 0.3},
+{source: 2 ,target: 10  ,value: 0.3},
+{source: 21 ,target: 22  ,value: 0.568648},
+{source: 8 ,target: 23  ,value: 0.513448},
+{source: 8 ,target: 24  ,value: 0.529898},
+{source: 25 ,target: 26  ,value: 0.461303},
+{source: 2 ,target: 8  ,value: 0.9},
+{source: 27 ,target: 28  ,value: 0.606287},
+{source: 29 ,target: 10  ,value: 0.9},
+{source: 30 ,target: 1  ,value: 0.339605},
+{source: 10 ,target: 16  ,value: 0.69644},
+{source: 5 ,target: 4  ,value: 0.63706},
+{source: 15 ,target: 10  ,value: 0.540544},
+{source: 2 ,target: 24  ,value: 0.504538},
+{source: 2 ,target: 25  ,value: 0.504538},
+{source: 10 ,target: 26  ,value: 0.9},
+{source: 8 ,target: 31  ,value: 0.548633},
+{source: 32 ,target: 16  ,value: 0.501843},
+{source: 31 ,target: 26  ,value: 0.562826},
+{source: 8 ,target: 26  ,value: 0.535738},
+{source: 2 ,target: 33  ,value: 0.455901},
+{source: 34 ,target: 26  ,value: 0.540693},
+{source: 16 ,target: 27  ,value: 0.606287},
+{source: 2 ,target: 29  ,value: 0.3},
+{source: 32 ,target: 5  ,value: 0.492776},
+{source: 2 ,target: 32  ,value: 0.589474},
+{source: 35 ,target: 26  ,value: 0.485689},
+{source: 1 ,target: 2  ,value: 0.9},
+{source: 36 ,target: 4  ,value: 0.674489},
+{source: 37 ,target: 15  ,value: 0.523033},
+{source: 19 ,target: 32  ,value: 0.542354},
+{source: 38 ,target: 10  ,value: 0.69644},
+{source: 21 ,target: 32  ,value: 0.501843},
+{source: 38 ,target: 16  ,value: 0.606287},
+{source: 27 ,target: 22  ,value: 0.667945},
+{source: 37 ,target: 21  ,value: 0.83973},
+{source: 10 ,target: 39  ,value: 0.442792},
+{source: 10 ,target: 24  ,value: 0.504538},
+{source: 26 ,target: 40  ,value: 0.416834},
+{source: 5 ,target: 2  ,value: 0.716767},
+{source: 26 ,target: 41  ,value: 0.550431},
+{source: 26 ,target: 39  ,value: 0.397994},
+{source: 30 ,target: 2  ,value: 0.504538},
+{source: 18 ,target: 2  ,value: 0.716767},
+{source: 10 ,target: 33  ,value: 0.455901},
+{source: 18 ,target: 21  ,value: 0.642193},
+{source: 38 ,target: 4  ,value: 0.663421},
+{source: 20 ,target: 5  ,value: 0.766206},
+{source: 27 ,target: 10  ,value: 0.69644},
+{source: 26 ,target: 32  ,value: 0.56148},
+{source: 34 ,target: 8  ,value: 0.527058},
+{source: 8 ,target: 40  ,value: 0.402635},
+{source: 22 ,target: 4  ,value: 0.73615},
+{source: 28 ,target: 38  ,value: 0.606287},
+{source: 26 ,target: 17  ,value: 0.461303},
+{source: 14 ,target: 2  ,value: 0.504538},
+{source: 37 ,target: 32  ,value: 0.531469},
+{source: 17 ,target: 2  ,value: 0.504538},
+{source: 1 ,target: 8  ,value: 0.5},
+{source: 8 ,target: 39 ,value: 0.397994},
+{source: 17 ,target: 8  ,value: 0.445589},
+{source: 16 ,target: 41  ,value: 0.83973},
+{source: 40 ,target: 10  ,value: 0.504538},
+{source: 30 ,target: 10  ,value: 0.504538},
+{source: 2 ,target: 40  ,value: 0.504538},
+{source: 21 ,target: 15  ,value: 0.484305},
+{source: 37 ,target: 42  ,value: 0.95},
+{source: 29 ,target: 13  ,value: 0.7},
+{source: 16 ,target: 28  ,value: 0.606287},
+{source: 5 ,target: 15  ,value: 0.470571},
+{source: 25 ,target: 10  ,value: 0.504538},
+{source: 8 ,target: 35  ,value: 0.485689},
+{source: 2 ,target: 21  ,value: 0.716767},
+{source: 5 ,target: 18  ,value: 0.642193},
+{source: 36 ,target: 16  ,value: 0.83973},
+{source: 36 ,target: 41  ,value: 0.95},
+{source: 17 ,target: 29  ,value: 0.448112},
+{source: 15 ,target: 36  ,value: 0.512536},
+{source: 5 ,target: 21  ,value: 0.642193},
+{source: 4 ,target: 16  ,value: 0.648781},
+{source: 2 ,target: 39  ,value: 0.442792},
+{source: 8 ,target: 41  ,value: 0.476934},
+{source: 30 ,target: 29  ,value: 0.376816},
+{source: 27 ,target: 38  ,value: 0.606287},
+{source: 32 ,target: 10  ,value: 0.589474},
+{source: 10 ,target: 28  ,value: 0.69644},
+{source: 23 ,target: 26  ,value: 0.526731},
+{source: 15 ,target: 38  ,value: 0.484305},
+{source: 21 ,target: 42  ,value: 0.83973},
+{source: 32 ,target: 36  ,value: 0.531469},
+{source: 37 ,target: 36  ,value: 0.504993},
+{source: 5 ,target: 22  ,value: 0.558375},
+{source: 1 ,target: 29  ,value: 0.243676},
+{source: 1 ,target: 29  ,value: 0.229297},
+{source: 32 ,target: 8  ,value: 0.542354},
+{source: 25 ,target: 8  ,value: 0.445589}]; 
+
+var width  = 1200;	//SVG绘制区域的宽度
+		var height = 600;	//SVG绘制区域的高度
+			
+		var svg = d3.select("body")			//选择<body>
+					.append("svg")			//在<body>中添加<svg>
+					.attr("width", width)	//设定<svg>的宽度属性
+					.attr("height", height);//设定<svg>的高度属性
+
+  	var force = d3.layout.force()
+  					.size([width,height])
+  					.charge(-300)//设定顶点的电荷数
+  					.linkDistance(100);//设定边的距离
+
+  //	d3.json("data/3.json",function(error,root){
+//  		if (error) throw error;
+
+  	
+		//2.转换数据
+		force.nodes(node)	//设定顶点数组
+			.links(edge);	//设定边数组
+							
+	
+		force.start();	//开启布局计算
+
+		
+		//3.绘制
+		var color = d3.scale.category20();
+			
+		//绘制连线
+		var lines = svg.selectAll(".forceLine")
+							.data(edge)
+							.enter()
+							.append("line")
+							.attr("class","forceLine")
+							.style("stroke-width",function(d){return Math.sqrt(d.value*5);})
+							.call(force.drag);
+		
+		//绘制节点
+		var circles = svg.selectAll(".forceCircle")
+							.data(node)
+							.enter()
+							.append("circle")
+							.attr("class","forceCircle")
+							.attr("r",10)
+							.style("fill",function(d,i){
+								return color(i);
+							})
+							.call(force.drag);
+
+		circles.append("title")
+			.text(function(d){return d.name;});
+		lines.append("title")
+			.text(function(d){return d.value;});
+		//绘制文字
+	/*	var texts = svg.selectAll(".forceText")
+							.data(nodes)
+							.enter()
+							.append("text")
+							.attr("class","forceText")
+							.attr("x",function(d){ return d.x; })
+							.attr("y",function(d){ return d.y; })
+							.attr("dy", ".3em")
+							.text(function(d){ return d.name; });
+		*/
+
+		//tick事件的监听器
+		force.on("tick", function(){
+			
+			 //更新连线的端点坐标
+			 lines.attr("x1",function(d){ return d.source.x; });
+			 lines.attr("y1",function(d){ return d.source.y; });
+			 lines.attr("x2",function(d){ return d.target.x; });
+			 lines.attr("y2",function(d){ return d.target.y; });
+			 
+			 //更新节点坐标
+			 circles.attr("cx",function(d){ return d.x; });
+			 circles.attr("cy",function(d){ return d.y; });
+			 
+			 //更新节点文字的坐标
+	//		 texts.attr("x",function(d){ return d.x; });
+	//		 texts.attr("y",function(d){ return d.y; });
+			 
+		});
+		
+		
+		//力学图运动开始时
+		force.on("start", function(){
+			console.log("运动开始");
+		});
+			
+		//力学图运动结束时
+		force.on("end", function(){
+			console.log("运动结束");
+		});
+		
+//		});	
+
+
+</script>
+	<!--<svg >
+		<g transform="scale(2)">
+		<circle cx="100" cy="50" r="40" stroke="black" stroke-width="2" fill="red"/></circle>
+	
+			
+				<circle cx="100" cy="100" r="54" stroke="black" fill="red"></circle>
+
+				<circle class="class equivalentclass" r="50">
+				<title>Bo</title>
+				</circle>
+			
+		</g>
+	</svg>-->
+
+
+
+
+	
+	<script type="text/javascript" src="vis.js"></script>
+
+</body>
+</html>

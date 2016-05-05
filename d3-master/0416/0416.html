@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<script type="text/javascript" src="../d3.js"></script>
+<head>
+	<title>0412test</title>
+</head>
+<body>
+<div id="graph" style="height:626px;">
+	<svg class="svg" width="1065" height="626">
+		<g class="node">
+			<circle id = "ss" cx="150" cy="150" r="100" fill="bkue">
+			<script type="text/javascript">
+				var drag = d3.behavior.drag().on("drag",dragmove);
+
+				function dragmove(d){
+					d3.select(this)
+						.attr("cx",d.cx = d3.event.x)
+						.attr("cy",d.cy = d3.event.y);
+				}
+				d3.select("#ss").call(drag);
+
+			</script>
+		</g>
+	</svg>
+</div>
+</body>
+</html>

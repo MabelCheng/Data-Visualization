@@ -1,0 +1,15 @@
+{
+  "name":"flare",
+  "children":
+  [
+      {
+          "name":"",
+          "children":
+          [
+            {"name":"AAAC","size":3938},
+            {"name":"sdf","size":9999},
+            {"name":"sdfsdf","size":980}
+          ]
+      }
+  ]
+}

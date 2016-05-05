@@ -1,0 +1,638 @@
+<html>  
+<script src="../d3.min.js" charset="utf-8"></script>
+  <head>  
+        <meta charset="utf-8">  
+        <title></title>  
+		
+  <style>
+
+.triangle-right{
+	width: 0;
+	height: 0;
+	border-top: 25px solid transparent;
+	border-left: 50px solid transparent;
+	border-bottom: 25px solid transparent;
+}
+  circle{
+  	fill:rgb(170, 204, 255);
+  	stroke-width:2;
+  	strole:black;
+  }
+.unseen{
+	visibility: hidden;
+}
+  .slider{
+  	margin-left: 15px;
+  }
+
+  .title{
+  	font-size: 17px;
+  	color: #2c2c2c;
+  }
+  body{
+  	font-family: Microsoft YaHei;
+  	font-size: 14px;
+  }
+
+  .button{
+  	width: 140px;
+  	line-height: 38px;
+  	text-align: center;
+  	font-weight: bold;
+  	color: #fff;
+  	text-shadow: 1px 1px 1px #333;
+  	border-radius: 5px;
+  	margin:0 20px 20px 0;
+  	position:relative;
+  	overflow: hidden;
+  }
+  .button.black{
+  	border:1px solid #333;
+  	box-shadow: 0 1px 2px #8b8b8b inset, 0 -1px 0 #3d3d3d inset, 0 -2px 3px #8b8b8b inset;
+  	background: -webkit-linear-gradient(top,#656565,#4c4c4c);
+  }
+
+  .info{
+  	padding-top: 40px;
+  	font-family: 'Comic Sans MS', cursive;
+  }
+
+  .graph{
+  	float: left;
+  }
+
+  .forceLine {
+	 stroke: #444 ;
+	 stroke-width: 2 ;
+  }
+  .ratioslider{
+		margin:5px 15px; 
+		width: 500px;
+		font-size: 1em;
+		float: left;
+	}
+
+  .forceText {
+     fill: black ;
+	 text-anchor: middle ;
+	 font-size: 20;
+	 font-family: arial;
+	 visibility:hidden;
+  }
+
+  .show{
+  	visibility: visible;
+  }
+  .selectitem{
+  	stroke:red;
+  	stroke-width:4;
+  }
+
+  .acrossitem{
+  	fill:red;
+  	cursor:hand;
+  }
+
+  .linkitem{
+  	fill:#EE799F;
+  }
+  .linkline{
+  	stroke:#FF7F00;
+  }
+
+
+  </style>
+		
+  </head> 
+
+    <body>  
+		  
+        <script>
+		
+		
+		//1.确定初始数据
+	  	var root;
+	  	var nodeArray;
+	  	var links;
+	  	var circles;
+	  	var activeNode;
+	  	var currentZoom = 1;
+	  	var SHOW_THRESHOLD = 2.5;
+	  	var currentOffset = { x : 0, y : 0 };
+	  	var nodeById = d3.map();
+	  	var status = true;
+
+      var NodeChange;
+      var LinkChange;
+	  	
+		var WIDTH  = 1000;	//SVG绘制区域的宽度
+		var HEIGHT = 600;	//SVG绘制区域的高度
+	
+		var svg = d3.select("body")	
+					.append("svg")
+					.classed("graph",true)			// 添加<svg>
+					.attr("width", WIDTH)	//设定<svg>的宽度属性
+					.attr("height", HEIGHT);//设定<svg>的高度属性
+
+  	var force = d3.layout.force()
+  					.size([WIDTH,HEIGHT])
+  					.charge(-300)//设定顶点的电荷数
+  					.linkDistance(200);//设定边的距离
+
+  	d3.json("1.json",function(error,root){
+  		if (error) throw error;
+
+  	
+  	
+
+	  root.nodes.forEach(function(node) {
+    	nodeById.set(node.id, node);
+	  });
+
+	  root.links.forEach(function(link) {
+ 	   	link.source = nodeById.get(link.source);
+  	  	link.target = nodeById.get(link.target);
+	  });
+		//2.转换数据
+		force.nodes(root.nodes)	//设定顶点数组
+			.links(root.links);	//设定边数组
+							
+	
+		force.start();	//开启布局计算
+		
+		console.log(root.nodes);	//输出转换后的数据
+		console.log(root.links);
+		nodeArray= root.nodes;
+		//3.绘制
+		var color = d3.scale.category20();
+			
+		//绘制连线
+		 lines = svg.selectAll(".forceLine")
+							.data(root.links)
+							.enter()
+							.append("line")
+							.attr("class","forceLine")
+							.attr("id",function(d){return String(d.source.id+ "_" + d.target.id);})
+							.style("stroke-width",function(d){return Math.sqrt(d.value*5);})
+							.call(force.drag);
+		
+		//绘制节点
+		 circles = svg.selectAll(".forceCircle")
+							.append("g")
+							.data(root.nodes)
+							.enter()
+							.append("circle")
+							.attr("class","forceCircle")
+							.attr("id",function(d){return String("circle_"+d.id)})
+							.attr("r",20)
+							.call(force.drag)
+							.on("mouseover", function(d) { highlightGraphNode(d,true,this);  })
+							.on("mouseout", function(d) { highlightGraphNode(d,false,this);  })
+							.on("click",function(d){showMoviePanel(d)});
+
+		
+	circles.append("title")
+			.text(function(d){return d.name;});
+		lines.append("title")
+			.text(function(d){return d.value;});
+		//绘制文字
+		var texts = svg.selectAll(".forceText")
+							.data(root.nodes)
+							.enter()
+							.append("text")
+							.attr("class","forceText")
+							.attr("id",function(d){return String("l_"+d.id);})
+							.attr("x",function(d){ return d.x; })
+							.attr("y",function(d){ return d.y; })
+							.attr("dy", ".3em")
+							.text(function(d){ return d.id; });
+		
+
+		//tick事件的监听器
+		force.on("tick", function(){
+			
+			 //更新连线的端点坐标
+			 lines.attr("x1",function(d){ return d.source.x; });
+			 lines.attr("y1",function(d){ return d.source.y; });
+			 lines.attr("x2",function(d){ return d.target.x; });
+			 lines.attr("y2",function(d){ return d.target.y; });
+			 
+			 //更新节点坐标
+			 circles.attr("cx",function(d){ return d.x; });
+			 circles.attr("cy",function(d){ return d.y; });
+			 
+			 //更新节点文字的坐标
+			 texts.attr("x",function(d){ return d.x; });
+			 texts.attr("y",function(d){ return d.y; });
+			 
+		});
+		
+		
+		//力学图运动开始时
+		force.on("start", function(){
+			console.log("运动开始");
+		});
+			
+		//力学图运动结束时
+		force.on("end", function(){
+			console.log("运动结束");
+		});
+		
+		});	
+
+
+ // add a method conditionaly
+    if (!('xpush' in Array.prototype)) {
+        // push value to array only if not already present
+        Array.prototype.xpush = function(value){
+            if(this.indexOf(value) === -1){
+                this.push(value);
+            };
+            return this
+        };
+    }
+
+
+  	function changeRatio(){
+	var ratio = d3.select("#ratio").property("value");
+	//alert(ratio);
+	
+	d3.json(ratio+".json", function(error, graph) {
+  if (error) throw error;
+
+  //d3.selectAll(".node").transition().duration(1000).remove();
+
+  NodeChange = force.nodes();
+  LinkChange = force.links();
+
+  NodeChange.splice(0,NodeChange.length);
+  LinkChange.splice(0,LinkChange.length);
+
+//此处需要修改，仅供先试用目前
+for (var i = graph.nodes.length - 1; i >= 0; i--) {
+  NodeChange.xpush(graph.nodes[i]);
+}
+for (var i = graph.links.length - 1; i >= 0; i--) {
+  LinkChange.xpush(graph.links[i]);
+}
+ // NodeChange.xpush(graph.nodes);
+//  LinkChange.xpush(graph.links);
+
+
+  lines = svg.selectAll(".forceLine")
+              .data(LinkChange)
+              .enter()
+              .append("line")
+              .attr("class","forceLine")
+              .attr("id",function(d){return String(d.source.id+ "_" + d.target.id);})
+              .style("stroke-width",function(d){return Math.sqrt(d.value*5);})
+              .call(force.drag);
+    
+    lines.exit().remove();
+    //绘制节点
+     circles = svg.selectAll(".forceCircle")
+              .append("g")
+              .data(NodeChange)
+              .enter()
+              .append("circle")
+              .attr("class","forceCircle")
+              .attr("id",function(d){return String("circle_"+d.id)})
+              .attr("r",20)
+              .call(force.drag)
+              .on("mouseover", function(d) { highlightGraphNode(d,true,this);  })
+              .on("mouseout", function(d) { highlightGraphNode(d,false,this);  })
+              .on("click",function(d){showMoviePanel(d)});
+
+    circles.exit().remove();
+  circles.append("title")
+      .text(function(d){return d.name;});
+    lines.append("title")
+      .text(function(d){return d.value;});
+    //绘制文字
+    var texts = svg.selectAll(".forceText")
+              .data(NodeChange)
+              .enter()
+              .append("text")
+              .attr("class","forceText")
+              .attr("id",function(d){return String("l_"+d.id);})
+              .attr("x",function(d){ return d.x; })
+              .attr("y",function(d){ return d.y; })
+              .attr("dy", ".3em")
+              .text(function(d){ return d.id; });
+    
+
+    //tick事件的监听器
+    force.on("tick", function(){
+      
+       //更新连线的端点坐标
+       lines.attr("x1",function(d){ return d.source.x; });
+       lines.attr("y1",function(d){ return d.source.y; });
+       lines.attr("x2",function(d){ return d.target.x; });
+       lines.attr("y2",function(d){ return d.target.y; });
+       
+       //更新节点坐标
+       circles.attr("cx",function(d){ return d.x; });
+       circles.attr("cy",function(d){ return d.y; });
+       
+       //更新节点文字的坐标
+       texts.attr("x",function(d){ return d.x; });
+       texts.attr("y",function(d){ return d.y; });
+       
+    });
+    
+    
+    //力学图运动开始时
+    force.on("start", function(){
+      console.log("运动开始");
+    });
+      
+    //力学图运动结束时
+    force.on("end", function(){
+      console.log("运动结束");
+    });
+    
+  //var nodes = circles.data(graph.nodes);
+
+
+
+
+ 	/*var remove1;
+  	var remove2;
+  if (ratio == 0.9) {
+  	remove1 = "b";
+  	remove2 = "d";
+  }else if (ratio == 0.7) {
+  	remove2 = "c";
+  	remove1 = "f";
+  }
+  
+
+  var cl = d3.selectAll(".forceLine");
+  for (var i = cl[0].length - 1; i >= 0; i--) {
+  	var idd = cl[0][i].id.split("_");
+  	for (var j = idd.length - 1; j >= 0; j--) {
+  		if (idd[j] === remove1 || idd[j] === remove2) {
+  			var link_temp = d3.select("#" + idd[0] + "_" + idd[1]);
+  			if (link_temp) {
+  				link_temp.classed("unseen",true);
+  			}
+  			else{
+  				link_temp = d3.select("#" +idd[1] + "_"+  idd[0]);
+  				link_temp.classed("unseen",true);
+  			}
+  		}
+  	}
+  }*/
+  
+});
+
+	}
+  	function highlightGraphNode( node, on )
+    {
+       if( on && activeNode !== undefined ) {
+		highlightGraphNode( nodeArray[activeNode], false );
+      }
+
+      // locate the SVG nodes: circle & label group
+      circle = d3.select( '#circle_' + node.id );
+      label  = d3.select( '#l_' + node.id );
+
+      // activate/deactivate the node itself
+      circle
+		.classed( "acrossitem", on );
+      label
+		.classed( 'on', on || currentZoom >= SHOW_THRESHOLD );
+      label.classed( 'show', on );
+
+      // activate all siblings
+    Object(node.links).forEach( function(id) {
+	d3.select("#circle_"+id.id).classed( 'linkitem', on );
+	var s=document.getElementById(node.id+"_"+id.id);
+	if (s) {
+		d3.select("#"+node.id+"_"+id.id).classed("linkline",on);
+	}else{
+		d3.select("#"+id.id+"_"+node.id).classed("linkline",on);
+	}
+	
+	label = d3.select('#l_'+id.id);
+	label.classed( 'on', on || currentZoom >= SHOW_THRESHOLD );
+	label.classed("show",on);
+      } );
+
+      // set the value for the current active node
+      activeNode = on ? node.index : undefined;
+    }
+
+
+  	function showMoviePanel( node ) {
+      // Fill it and display the panel
+      movieInfoDiv = d3.select("#info_detail");
+
+      movieInfoDiv
+	.html( getMovieInfo(node,nodeArray) )
+	.classed("panel_on",true);
+    }
+
+  	function getMovieInfo( n, nodeArray ) {
+    info = '<div id="detail">';
+    info +="<div class='title'>相关信息</div>"
+    if( n.id )
+       info += '<div class=t style="float: left">当前节点的id为:'+ n.id + '</div>';
+    info +=
+    '<img src="close.png" class="action" style="top: 0px;float:right" title="close panel" onClick="toggleDiv(\'movieInfo\');"/>' +
+    '<img src="target-32.png" class="action" style="top: 280px;" title="center graph on movie" onclick="selectMovie('+n.index+',true);"/>';
+
+    if( n.links ) {
+      info += '<div class=f><span class=l>相关节点为：</span>: ';
+      n.links.forEach( function(idx) {
+      	var ob=nodeById.get(idx.id);
+	info += '[<a href="javascript:void(0);" onclick="selectMovie('  
+	     + ob.index + ',true);">' + nodeArray[ob.index].id + '</a>]'
+      });
+      info += '</div>';
+    }
+    return info;
+  }
+
+
+   selectMovie = function( new_idx, doMoveTo ) {
+
+      // do we want to center the graph on the node?
+      doMoveTo = doMoveTo || false;
+      if( doMoveTo ) {
+	s = getViewportSize();
+	width  = s.w<WIDTH ? s.w : WIDTH;
+	height = s.h<HEIGHT ? s.h : HEIGHT;
+	offset = { x : s.x + width/2  - nodeArray[new_idx].x*currentZoom,
+		   y : s.y + height/2 - nodeArray[new_idx].y*currentZoom };
+	repositionGraph( offset, undefined, 'move' );
+      }
+      // Now highlight the graph node and show its movie panel
+      highlightGraphNode( nodeArray[new_idx], true );
+      showMoviePanel( nodeArray[new_idx] );
+    }
+
+      // Get the current size & offset of the browser's viewport window
+  function getViewportSize( w ) {
+    var w = w || window;
+    if( w.innerWidth != null ) 
+      return { w: w.innerWidth, 
+	       h: w.innerHeight,
+	       x : w.pageXOffset,
+	       y : w.pageYOffset };
+    var d = w.document;
+    if( document.compatMode == "CSS1Compat" )
+      return { w: d.documentElement.clientWidth,
+	       h: d.documentElement.clientHeight,
+	       x: d.documentElement.scrollLeft,
+	       y: d.documentElement.scrollTop };
+    else
+      return { w: d.body.clientWidth, 
+	       h: d.body.clientHeight,
+	       x: d.body.scrollLeft,
+	       y: d.body.scrollTop};
+  }
+
+
+   /* --------------------------------------------------------------------- */
+    /* Move all graph elements to its new positions. Triggered:
+       - on node repositioning (as result of a force-directed iteration)
+       - on translations (user is panning)
+       - on zoom changes (user is zooming)
+       - on explicit node highlight (user clicks in a movie panel link)
+       Set also the values keeping track of current offset & zoom values
+    */
+    function repositionGraph( off, z, mode ) {
+
+      // do we want to do a transition?
+      var doTr = (mode == 'move');
+
+      // drag: translate to new offset
+      if( off !== undefined &&
+	  (off.x != currentOffset.x || off.y != currentOffset.y ) ) {
+	g = d3.select('svg')
+	if( doTr )
+	  g = g.transition().duration(500);
+	g.attr("transform", function(d) { return "translate("+
+					  off.x+","+off.y+")" } );
+	currentOffset.x = off.x;
+	currentOffset.y = off.y;
+      }
+
+      // zoom: get new value of zoom
+      if( z === undefined ) {
+	if( mode != 'tick' )
+	  return;	// no zoom, no tick, we don't need to go further
+	z = currentZoom;
+      }
+      else
+	currentZoom = z;
+
+      // move edges
+      e = doTr ? graphLinks.transition().duration(500) : graphLinks;
+      e
+	.attr("x1", function(d) { return z*(d.source.x); })
+        .attr("y1", function(d) { return z*(d.source.y); })
+        .attr("x2", function(d) { return z*(d.target.x); })
+        .attr("y2", function(d) { return z*(d.target.y); });
+
+      // move nodes
+      n = doTr ? graphNodes.transition().duration(500) : graphNodes;
+      n
+	.attr("transform", function(d) { return "translate("
+					 +z*d.x+","+z*d.y+")" } );
+      // move labels
+      l = doTr ? graphLabels.transition().duration(500) : graphLabels;
+      l
+	.attr("transform", function(d) { return "translate("
+					 +z*d.x+","+z*d.y+")" } );
+    }
+     
+     function toggleDiv(id){
+     	alert(id);
+     }  
+
+     function stop(status){
+     	if(status){
+     		force.stop();
+     		force.linkStrength(0);
+     		status = false;
+     	}
+     	else{
+     		force.resume();
+     		force.linkStrength(1);
+     		status = true;
+     	}
+     } 
+
+        </script>  
+        <div class="intro">
+        	<img style="width:200px;" src="logo.png">
+        	<img style="float:right;" src="help.png" title="帮助" onclick="toggleDiv('help');">
+        	<div>
+        		<span> #最美应用# NONo笔记 - 清爽，简单，强迫症请进  哈喽，今天最美应用又要给大家推荐笔记啦，我们可是向着成为全国最大的笔记应用推荐基地的目标努力中哟(误)……不过既然笔记应用是大家最常用的 app 之一，我们每次推荐的笔记应用都是必要并适合不同人群的。例如今天推荐的NONo笔记，就适合喜欢 Material Design 风格，没有多平台同步需求只是想随手记一些东西，就这样还有排版强迫症的美友。如果你以各种方式中枪，请继续往下拉；如果你是神闪避，请留下花花～本文来自最美撰稿人 Mephisto.pheies  #安卓# 下载链接O网页链接收起全文d</span>
+        	</div>
+        	<div class="info" id="info">
+        	<div class="info_graph" id="info_graph">
+        		
+        	</div>
+        	<div class="info_detail" id="info_detail">
+        		
+        	</div>
+        </div>
+        </div>
+       
+        
+        <div class="option" id="option" style="float: left;width:100%">
+        	<div class="triangle-right"></div>
+        	<div class="slider" id= "slider"></div>
+        	<script>
+	var sliderresult;
+	var width = 500;
+
+	var slidernum = d3.select("#slider").append("svg")
+			.attr("height",20)
+			.attr("width",width)
+			.attr("color","lightgrey");
+
+	d3.json("result.json",function(error,result){
+			if (error)  throw error;		
+	
+	
+		slidernum.selectAll("text")
+			.data(result).enter().append("svg:text")
+			.attr("class","sliderText")
+			.text(function(d){return d.label})
+			.attr("x",function(d){return (width *d.label - 10)})
+			.attr("y",10)
+			.attr("font-size",4)
+			.attr("fill","black");
+
+		});
+        	</script>
+        	<input class="ratioslider" type="range" list="rationum"name="ratio" id="ratio" min="0" max="1"
+	value="1" step="0.1" list="silder" onchange="changeRatio()"></input><!--value 是初始值-->
+	<datalist>
+	<script type="text/javascript">
+	var sliderbar = d3.select("datalist")
+						.attr("id","rationum");
+
+		d3.json("result.json",function(error,result){
+			sliderbar.selectAll("option")
+			.data(result).enter().append("svg:option")
+			.attr("value",function(d){return d.label})
+		});
+	
+	
+	</script>
+	</datalist>
+        	
+        	<button class="button black" onclick="">export</button>
+
+        	<button class="button black" onclick="stop(status);">stop</button>
+        	
+        </div>
+        
+		
+    </body>  
+</html>  

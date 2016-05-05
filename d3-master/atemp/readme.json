@@ -1,0 +1,20 @@
+{
+ "name": "Data Mining","type":"related","index":2,
+ "children": [
+  {
+  "name": "Yapay Sinir Ağları", "size": 7074,"type":"related","index":3,
+    "children": [
+        {
+        "name": "Compututional Intelligence","type":"narrower","index":4,
+        "children":[
+            {"name": "Genetik Algoritmalar", "size": 7074,"type":"related","index":5},
+            {"name": "Bulanık Mantık", "size": 7074,"type":"related","index":5},
+            {"name":"Soft Computing","type":"related","index":5,
+                "children": [
+                    {"name": "Esnek Hesaplama", "size": 7074,"type":"related","index":6}
+                ]
+             } 
+         ]
+        }
+     ]
+ }]}

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<style>
+	body{
+		position: relative;
+		margin: 0 auto;
+		font-family: "";
+	}
+
+	.node {
+ 		stroke: #000;
+ 		stroke-width: 1.5px;
+	}
+
+	.link {
+ 		stroke: #999;
+		stroke-width: 1.5px;
+	}
+
+	.svg{
+		float: right;
+		width: 80%;
+		height: 95%;
+	}
+	.detail{
+		float: right;
+		width:	20%;
+		height: 500px;
+	}
+	.ratioslider{
+		margin:5px auto;
+		width: 800px;
+		font-size: 1em;
+		float: left;
+	}
+	.info{
+		width:100%;
+		height:100px;
+		font-size: 9em;
+	}
+</style>
+<head>
+	
+</head>
+<body>
+	<script type="text/javascript" src="../d3.js"></script>
+	<div class="info" id="info">
+		<!-- use to show info of the visual-->
+		<div>简介</div>
+	</div>
+	<script>
+		
+var width = 960,
+    height = 500;
+
+var force = d3.layout.force()
+    .charge(-200)
+    .linkDistance(40)
+    .size([width, height]);
+
+var svg = d3.select("body").append("svg")
+	.attr("style","float:left")
+    .attr("width", width)
+    .attr("height", height);
+  //  .attr("onload","draw(0.9.json)");
+
+var node;
+var link;
+var color = d3.scale.category20();
+d3.json("1.json", function(error, graph) {
+  if (error) throw error;
+
+  var nodeById = d3.map();
+
+  graph.nodes.forEach(function(node) {
+    nodeById.set(node.id, node);
+  });
+
+  graph.links.forEach(function(link) {
+    link.source = nodeById.get(link.source);
+    link.target = nodeById.get(link.target);
+  });
+
+  force
+      .nodes(graph.nodes)
+      .links(graph.links)
+      .start();
+
+  link = svg.selectAll(".link")
+      .data(graph.links)
+    .enter().append("line")
+      .attr("class", "link")
+      .attr("id",function(d){
+      	return String(d.source.id + "-" + d.target.id);
+      });
+
+  node = svg.selectAll(".node")
+      .data(graph.nodes)
+    .enter().append("circle")
+      .attr("class", "node")
+      .attr("id",function(d){return d.id;})
+      .attr("r", function(d){return 2*d.size;})
+      .style("fill", function(d) { return color(d.id); })
+      .call(force.drag)
+      .on("mouseover",mouseoverf);
+
+      node.append("title")
+      		.text(function(d){return d.id;});
+      link.append("title")
+      		.text(function(d){return d.weight;});
+
+  force.on("tick", function() {
+    link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node.attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+  });
+
+});
+
+function mouseoverf(d){
+	var bc = String("background-color:" + color(d.id));
+	var detail = d3.select("#detail")
+					.attr("style",bc);
+
+}
+function changeRatio(){
+	var ratio = d3.select("#ratio").property("value");
+	//alert(ratio);
+	
+	d3.json(ratio+".json", function(error, graph) {
+  if (error) throw error;
+
+  //d3.selectAll(".node").transition().duration(1000).remove();
+
+  var nodes = node.data(graph.nodes);
+
+  
+ 	var remove1;
+  	var remove2;
+  if (ratio == 0.9) {
+  	remove1 = "b";
+  	remove2 = "d";
+  }else if (ratio == 0.7) {
+  	remove2 = "c";
+  	remove1 = "f";
+  }
+  var compressnode1 = d3.select("#"+remove1);
+  var compressnode2 = d3.select("#"+remove2);
+
+  compressnode1.remove();
+  compressnode2.remove();
+
+  var cl = d3.selectAll(".link");
+  for (var i = cl[0].length - 1; i >= 0; i--) {
+  	var idd = cl[0][i].id.split("-");
+  	for (var j = idd.length - 1; j >= 0; j--) {
+  		if (idd[j] === remove1 || idd[j] === remove2) {
+  			cl[0][i].remove();
+  		}
+  	}
+  }
+  
+});
+
+	}
+</script>
+
+<div class="detail" id="detail">
+<!-- use to show the detail of nodes or links-->
+</div>	
+<div class="slider" id= "slider">
+<!-- use to show slider to change the ratio of the gragh-->	
+<script>
+	var sliderresult;
+	var width = 800;
+
+	var slidernum = d3.select("#slider").append("svg")
+			.attr("height",20)
+			.attr("width",width)
+			.attr("color","lightgrey");
+
+	d3.json("result.json",function(error,result){
+			if (error)  throw error;		
+	
+	
+		slidernum.selectAll("text")
+			.data(result).enter().append("svg:text")
+			.attr("class","sliderText")
+			.text(function(d){return d.label})
+			.attr("x",function(d){return (width *d.label - 10)})
+			.attr("y",10)
+			.attr("font-size",4)
+			.attr("fill","black");
+
+		});
+
+
+
+</script>
+</div>
+<input class="ratioslider" type="range" list="rationum"name="ratio" id="ratio" min="0" max="1"
+	value="1" step="0.1" list="silder" onchange="changeRatio()"></input><!--value 是初始值-->
+<datalist>
+<script type="text/javascript">
+	var sliderbar = d3.select("datalist")
+						.attr("id","rationum");
+
+		d3.json("result.json",function(error,result){
+			sliderbar.selectAll("option")
+			.data(result).enter().append("svg:option")
+			.attr("value",function(d){return d.label})
+		});
+		
+</script>
+</datalist>
+</body>
+</html>

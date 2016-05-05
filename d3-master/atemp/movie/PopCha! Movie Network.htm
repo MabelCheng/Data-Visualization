@@ -1,0 +1,160 @@
+﻿<!DOCTYPE HTML>
+<!-- saved from url=(0039)http://bl.ocks.org/paulovn/raw/9686202/ -->
+<!DOCTYPE html PUBLIC "" ""><HTML><HEAD><META content="IE=11.0000" 
+http-equiv="X-UA-Compatible">
+     
+<META charset="utf-8">     <TITLE>PopCha! Movie Network</TITLE>     <LINK href="PopCha!%20Movie%20Network_files/movie-network.css" 
+rel="stylesheet">     <LINK href="popcha.ico" rel="shortcut icon" type="image/x-icon"> 
+    
+<SCRIPT>
+      // Sniff MSIE version
+      // http://james.padolsey.com/javascript/detect-ie-in-js-using-conditional-comments/
+      var ie = ( function() {
+        var undef,
+        v = 3,
+        div = document.createElement('div'),
+        all = div.getElementsByTagName('i');
+        while (
+         div.innerHTML='<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',all[0]
+        );
+        return v > 4 ? v : undef;
+      }() );
+
+      function takeAction() {
+        if( ie && ie < 9 ) {
+	  D3notok();
+        } else {
+          // Load D3.js, and once loaded do our stuff
+          var head = document.getElementsByTagName('head')[0];
+          var script = document.createElement('script');
+          script.type = 'text/javascript';
+	  script.src = "http://d3js.org/d3.v3.min.js";
+          script.addEventListener('load', D3ok, false);
+          script.onload = "D3ok();";
+	  head.appendChild(script);
+       }
+     }
+    </SCRIPT>
+ 
+<META name="GENERATOR" content="MSHTML 11.00.9600.18283"></HEAD> 
+<BODY onload="takeAction();">
+<DIV id="nocontent">
+<H1>Sadly your browser is not compatible with this site</H1>
+<DIV>You can use <A href="http://www.google.com/chrome/">Google    Chrome</A>, 
+<A href="http://www.mozilla.org/firefox">Mozilla Firefox</A>    or <A href="http://windows.microsoft.com/en-us/internet-explorer/download-ie">Microsoft 
+   Internet Explorer (v9 or above)</A> to access the PopCha Movie    
+Network</DIV></DIV>
+<DIV id="movieNetwork"></DIV>
+<DIV id="sidepanel">
+<DIV id="title"><IMG 
+src="PopCha!%20Movie%20Network_files/popcha-100.png"><BR>Movie Network<BR><!-- <a href="javascript:void(0);" 
+              onClick="zoomCall(0.5);" style="pointer-events: all;">+</a>
+      <a href="javascript:void(0);" 
+         onClick="zoomCall(-0.5);" style="pointer-events: all;">-</a> --> 
+      <IMG title="Click for help" id="helpIcon" onclick="toggleDiv('help');" 
+src="PopCha!%20Movie%20Network_files/help-question-48.png">     </DIV>
+<DIV class="panel_off" id="help"><IMG style="float: right;" onclick="toggleDiv('help');" 
+src="PopCha!%20Movie%20Network_files/close.png">      This is a subset of the 
+movie network produced from data in the      mobile <A href="https://www.popcha.tv/">PopCha!</A> 
+app. Movies      relate to each other <EM>as they get picked by PopCha! 
+users</EM>       (note that movie details are <STRONG>not</STRONG> used to build 
+the       graph).       
+<UL>
+  <LI>Hover over a node to see the movie title, and to highlight        the 
+  movies related to it.</LI>
+  <LI>Click on a node to show movie details. It will open up a        side 
+  panel.</LI>
+  <LI>On the movie details panel, you can click on the <EM>target</EM>         
+  icon to center the graph on that movie. And clicking on the link to        a 
+  related movie will move to that movie (in the graph and in the        
+  panel)</LI>
+  <LI>You can use you usual browser controls to zoom and pan        over the 
+  graph. If you zoom in when centred on a movie, the        graph will expand 
+  around it.</LI>
+  <LI>Above a certain zoom level, movie titles are automatically        
+  displayed for all the nodes.</LI></UL>      For additional information, check 
+the <STRONG><A onclick="return toggleDiv('faq');" href="http://bl.ocks.org/paulovn/raw/9686202/">FAQ</A></STRONG>. 
+    </DIV>
+<DIV class="panel_off" id="movieInfo"></DIV></DIV>
+<DIV class="panel_off" id="faq">
+<DIV id="close_faq"><IMG onclick="toggleDiv('faq');" src="PopCha!%20Movie%20Network_files/close.png"> 
+    </DIV>
+<DL>
+  <DT>Where does this come from?</DT>
+  <DD>The <A href="https://www.popcha.tv/">PopCha!</A> mobile app      lets 
+  users search for movies, view their details, rate them, add      them to bags 
+  to build personalized movie lists and receive      notifications when they are 
+  available in theaters, TV or Video      on Demand platforms. Its 
+  recommendation engine allows proposing      users movies they might be 
+  interested in. PopCha! users have so      far currently rated, added to bags 
+  or otherwise showed interest      for more than 11,000 movies</DD>
+  <DT>And how was this concrete "movie network" made?</DT>
+  <DD>This is how we did it:         
+  <OL style="margin: 0px;">
+    <LI> We selected the movies with the top ratings (the most          highly 
+    valued movies for PopCha! users). Those were our          initial seed, and 
+    are the nodes with a red border in the          graph. As you can see, they 
+    are mostly the "usual suspects",          but with also a few 
+    non-conventional movies added in.</LI>
+    <LI>Then we used our recommendation engine to find the          movies most 
+    similar to them. Not by looking at their genre,          director or cast, 
+    but by checking how users interact with          them. That is, two movies 
+    are considered similar just by          checking if users rate them equally, 
+    or usually appear          together in their bags. Those movies make up the 
+    second          level in our network, marked with a grey border.</LI>
+    <LI>Finally, we rounded up the graph by adding a third          level, 
+    computed as the movies most similar to the ones in          the second 
+    level</LI></OL></DD>
+  <DT>Ok, but <EM>how</EM> was the graph actually computed?</DT>
+  <DD>For those of you technically oriented, the links between      movies were 
+  extracted as item-item similarity scores computed in      our Collaborative 
+  Filtering engine, using all events produced by      users of the PopCha! 
+  Android/iOS apps. Those links were then fed      to a <A href="https://github.com/mbostock/d3/wiki/Force-Layout">force-directed 
+       graph layout</A> in <STRONG>D3.js</STRONG>.         <BR>No movie metadata 
+  (title, director, cast, whatever) was used or harmed in any way during the 
+  production of this graph.</DD>
+  <DT>What do the graph elements mean?</DT>
+  <DD>Each circle is a movie; it is linked to the set of movies      most 
+  similar to it according to our engine (and therefore to      PopCha! users). 
+  The size of the circle represents how it is      valued by PopCha! users; the 
+  set of 25 most valued movies is      highlighted with a red border. <BR>When a 
+  movie is selected (hovering or clicking) it is shown as purple in the network. 
+  The set of movies linked to it (the ones more similar to it) are also 
+  highlighted, this time in blue.<BR>The width of the link between two movies 
+  reflect how similar they are (in terms of user response to them); this 
+  similarity translates to the force attracting the nodes (so that two very 
+  similar movies will tend to stay close, within the constraints imposed by the 
+  rest of the forces from the other nodes).<BR>The force-directed layout is an 
+  iterative algorithm; each time the page is loaded the rendering starts anew, 
+  and converges towards a final stable state. There is some randomness in it, so 
+  that no two final states are equal (but relative positioning of movies, and 
+  the formed clusters, should be similar). 
+  <DT>What is the resulting structure?</DT>
+  <DD>The graph is heavily connected: there are connections between many of the 
+  movies in the network (note that this is only a partial view of the overall 
+  network: in the full graph there are many more connections, and also to the 
+  movies that here appear to be at the edges).<BR>There is a strong central 
+  cluster containing some of the most important movies (it is so dense that it 
+  cannot be clearly seen unless you zoom in). Some of them are deeply connected, 
+  check for instance <EM><A onclick="clearAndSelect(56);" href="javascript:void(0);">Seven</A></EM> 
+  or <EM><A onclick="clearAndSelect(65);" href="javascript:void(0);">Forrest 
+  Gump</A></EM>. Within that central cluster we can also identify thematic 
+  subclusters, such as the <A onclick="clearAndSelect(52);" href="javascript:void(0);">Tolkien 
+  saga</A>.<BR> Outside the graph core we can also find other areas with 
+  semantic meaning (e.g. the set of <EM><A onclick="clearAndSelect(165);" href="javascript:void(0);">Star 
+  Wars</A></EM> movies, or a group of classic <A onclick="clearAndSelect(61);" 
+  href="javascript:void(0);">Hitchcock thrillers</A>). There is also a small <A 
+  onclick="clearAndSelect(20);" href="javascript:void(0);">Western</A> cluster 
+  (mostly Clint Eastwood movies) and a <A onclick="clearAndSelect(119);" href="javascript:void(0);">Tarantino</A> 
+  group.<BR> As a curiosity, there seems to be an exaggerated importance given 
+  to movies that are seemingly minor, but that share title with more significant 
+  ones (i.e. there is a second <EM>Godfather</EM> or a second <EM>Gladiator</EM> 
+  in the graph, try to spot them!). These might stem from user confusion when 
+  selecting the movie they actually wanted.</DD></DL>
+<DT>Credits</DT>
+<DD><EM>      Movie statistics by the <A href="https://www.popcha.tv/">PopCha! 
+team</A><BR>      Graph computation &amp; visualization by Paulo Villegas<BR>    
+        Movie details from <A href="http://www.themoviedb.org/">The Movie 
+Database</A> </EM></DD></DIV>
+<SCRIPT src="PopCha!%20Movie%20Network_files/movie-network.js"></SCRIPT>
+ </BODY></HTML>

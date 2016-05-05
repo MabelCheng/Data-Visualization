@@ -1,0 +1,45 @@
+{
+"remove":
+[
+{"id":"b"},
+{"id":"d"}
+],
+"nodes":
+[
+{"id":"a","size":1,"links":
+	[
+	{"id":"b"},
+	{"id":"f"},
+	{"id":"d"},
+	{"id":"c"}]
+	},
+{"id":"b","size":1,"links":
+	[
+	{"id":"a"},
+	{"id":"c"}]},
+{"id":"c","size":1,"links":
+	[
+	{"id":"a"},
+	{"id":"b"}]},
+{"id":"d","size":1,"links":
+	[
+	{"id":"a"},
+	{"id":"f"}]},
+{"id":"f","size":1,"links":
+	[
+	{"id":"d"},
+	{"id":"e"},
+	{"id":"a"}]},
+{"id":"e","size":1,"links":
+	[
+	{"id":"f"}]}
+],
+"links":[
+{"source":"a","target":"b","weight": 7},
+{"source":"a","target":"c","weight": 2},
+{"source":"d","target":"a","weight": 9},
+{"source":"c","target":"b","weight": 4},
+{"source":"d","target":"f","weight": 1},
+{"source":"f","target":"e","weight": 9},
+{"source":"f","target":"a","weight": 2}]
+}

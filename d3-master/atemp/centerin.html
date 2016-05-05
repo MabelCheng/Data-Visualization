@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>graphSub</title>
+    <title>Animating Changes in Force Diagram</title>
+    <script src="http://d3js.org/d3.v3.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://livejs.com/live.js"></script>
+    <style>
+        .link {
+            stroke: #2E2E2E;
+            stroke-width: 2px;
+        }
+
+        .node {
+            stroke: #fff;
+            stroke-width: 2px;
+        }
+        .textClass {
+            stroke: #323232;
+            font-family: "Lucida Grande", "Droid Sans", Arial, Helvetica, sans-serif;
+            font-weight: normal;
+            stroke-width: .5;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<button onclick="reStart()">Restart Animation</button>
+<script>
+    //<link rel="stylesheet" href="static/css/base.css">
+    // add a method conditionaly
+    if (!('xpush' in Array.prototype)) {
+        // push value to array only if not already present
+        Array.prototype.xpush = function(value){
+            if(this.indexOf(value) === -1){
+                this.push(value);
+            };
+            return this
+        };
+    }
+    
+    d3.json("fm.json", function(error, graph) {
+        if (error) throw error;
+        
+        function chart(elementName) {
+
+            var width = function(value) {
+                if (!arguments.length) return width;
+                width = value;
+                return chart; // enable chaining
+            };
+
+            var height = function(value) {
+                if (!arguments.length) return height;
+                height = value;
+                return chart; // enable chaining
+            };
+
+            var resize = function() {
+                var svg = d3.select(elementName).append("svg");
+                width = window.innerWidth, height = window.innerHeight;
+                vis.attr("width", width).attr("height", height);
+                force.size([width, height]).resume();
+            }
+
+            // add nodes to the layout
+            var addNode = function(node){
+                nodes.push(node);                
+            };
+
+            // add link to the layout
+            var addLink = function(source, target, value){
+                var link = {"source": findNode(source), "target": findNode(target), "value": value};
+                subNetLinks.push(link);
+            };
+
+            // look for the node in the d3 layout
+            var findNode = function(name) {
+                for (var i in subNetNodes) {
+                    if (subNetNodes[i]["name"] === name) return subNetNodes[i];
+                };
+            };
+
+            // remove all links form the layout
+            var removeAllLinks = function() {
+                subNetLinks.splice(0, subNetLinks.length);
+                //update();
+            };
+
+            // remove all node from the layout
+            var removeAllNodes = function() {
+                subNetNodes.splice(0, subNetNodes.length);
+                //update();
+            };
+
+            var findNodeIndex = function(name, nodes) {
+                for (var i = 0; i < nodes.length; i++) {
+                    if (nodes[i].name == name) {
+                        return i;
+                    }
+                };
+            };
+
+            var subNet = function(currentIndex, hops){
+                // links stored as JSON objects, easy to compare
+                // operates on the data loaded from the JSON
+                // extracts a subset of the original data
+                var n = graph.nodes[currentIndex];
+                subNetNodes.xpush(n);
+
+                if (hops === 0) {
+                    return;
+                };
+
+                for (var i = 0; i < graph.links.length; i++) {
+
+                    if (currentIndex === graph.links[i].source) {
+                        tempLinks.xpush(JSON.stringify(graph.links[i]));
+                        subNet(graph.links[i].target, hops - 1)
+                    };
+                    if (currentIndex === graph.links[i].target) {
+                        tempLinks.xpush(JSON.stringify(graph.links[i]));
+                        subNet(graph.links[i].source, hops - 1)
+                    };
+                };                
+            };
+
+            var clickHandler = function(d, i){
+                // init
+                removeAllNodes(); // clears force.nodes()
+                removeAllLinks(); // clears force.links()
+                tempLinks = [];
+                
+                var link,
+                    source,
+                    target;
+
+                // extract subnet around 'd' with all nodes up to 2 hops away
+                subNet(findNodeIndex(d.name, graph.nodes), 2);
+                
+                //add links incrementaly
+                for (var i = 0; i < tempLinks.length; i++) {
+                    link = JSON.parse(tempLinks[i]);
+
+                    source = graph.nodes[link.source];
+                    target = graph.nodes[link.target];
+                    addLink(source.name, target.name, 2);
+                      
+                };
+
+                // setting the initial positions of the nodes
+                force.nodes().forEach(function(){
+                    this.x = width/2;
+                    this.y = height/2;
+                });
+                update();
+                //console.log(nodes);
+            };
+
+            d3.select(window).on("resize", resize)
+
+            var width = 960, // default width
+                height = 450, // default height
+                color = d3.scale.category10(),
+                force = d3.layout.force(),
+                subNetNodes = force.nodes(),
+                subNetLinks = force.links(),
+                tempLinks = [],
+                vis,
+                runOnceFlag = true,
+                clikedNode;
+
+            vis = d3.select(elementName)
+                    .append("svg:svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("id", "svg")
+                    .attr("pointer-events", "all")
+                    .append('svg:g');
+                    // .attr("viewBox", "0 0 " + width + " " + height)
+                    // .attr("perserveAspectRatio", "xMinYMid")
+
+            var update = function() {
+
+                console.log('update', force.nodes(), force.links());
+
+                var link = vis.selectAll("line")
+                        .data(subNetLinks, function (d) {
+                            console.log('update', typeof(d.source), d);
+                            if (typeof(d.source) === 'number') {
+                                return subNetNodes[d.source].name + "-" + subNetNodes[d.target].name;
+                            }else{
+                                return d.source.name + "-" + d.target.name;
+                            };
+                            
+                        });
+                
+                link.enter().insert("line", "g")
+                        .transition()   
+                        .delay(function (d, i) {
+                            return i*100;
+                        })
+                        .attr("id", function (d) {
+                            return d.source.name + "-" + d.target
+                            .name;
+                        })
+                        .attr("stroke-width", function (d) {
+                            return d.value / 10;
+                        })
+                        .attr("class", "link");
+                
+                link.append("title")
+                        .text(function (d) {
+                            return d.value;
+                        });
+                
+                link.exit().remove();
+
+                var node = vis.selectAll("g.node")
+                        .data(subNetNodes, function (d) {
+                            return d.name;
+                        });
+
+                var nodeEnter = node.enter()
+                        .append("g")
+                        .attr("class", "node")
+                        .call(force.drag);
+
+                nodeEnter
+                        .append("svg:circle")
+                        .attr("r", 12)
+                        .attr("id", function (d) {
+                            return "Node;" + d.name;
+                        })
+                        .attr("class", "nodeStrokeClass")
+                        .attr("fill", function(d) { return color(d.group); })
+                        .on('click', clickHandler);
+
+                nodeEnter.append("svg:text")
+                        .attr("class", "textClass")
+                        .attr("x", 14)
+                        .attr("y", ".31em")
+                        .text(function (d) {
+                            return d.name;
+                        });
+
+                node.exit().remove();
+
+                // Restart the force layout.
+                force
+                    .charge(-500)
+                    .linkDistance(15)
+                    .size([width, height])
+                    .start();                
+
+                force.on("tick", function () {
+
+                    node.attr("transform", function (d) {
+                        //console.log('**', d);
+                        return "translate(" + d.x + "," + d.y + ")";
+                    }); 
+                    
+                    link.attr("x1", function (d) {
+                        return d.source.x;
+                    })
+                            .attr("y1", function (d) {
+                                return d.source.y;
+                            })
+                            .attr("x2", function (d) {
+                                return d.target.x;
+                            })
+                            .attr("y2", function (d) {
+                                return d.target.y;
+                            }); 
+                });                
+            };
+
+            if (runOnceFlag) {
+                var a = graph.nodes[0];
+                var b = graph.nodes[1];
+                
+                //console.log(subNetNodes, subNetLinks);
+                subNetNodes.push(a);
+                subNetNodes.push(b);
+                
+                var c = {"source":0,"target":1,"value":1};
+                subNetLinks.push(c);
+                update();
+                runOnceFlag = false;
+            };
+        };
+        ///
+        chart('body');
+    });
+</script>
+</body>
+</html>
